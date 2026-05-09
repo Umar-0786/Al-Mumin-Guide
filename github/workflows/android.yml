@@ -1,38 +1,29 @@
 name: Build Android Bundle
+
 on:
   push:
+    branches: [ main ]
+  pull_request:
     branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-
-      - name: set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build GSons App
-        run: |
-          # 1. Package setup
-          npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          
-          # 2. Capacitor setup
-          npx cap init "Al Mumin Guide" com.gsons.mumin --web-dir .
-          npx cap add android
-          npx cap sync android
-          
-          # 3. Build .aab (Bundle)
-          cd android
-          chmod +x gradlew
-          ./gradlew bundleRelease
-
-            - name: Upload .aab Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-bundle
-          path: "**/*.aab"
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'adopt'
+    
+    - name: Build with Gradle
+      run: ./gradlew bundleRelease
+      
+    - name: Upload .aab Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Al-Mumin-Guide-Bundle
+        path: "**/*.aab"
